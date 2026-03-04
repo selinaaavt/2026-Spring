@@ -26,6 +26,7 @@ result_id = 6
 fourteen_id = 7
 temp_id = 8   # Used only in prog2
 W_id = 9       # Used only in prog2
+fourteen_id = 7
 
 # TODO: Fill in prog1 with the first RAM program provided in the homework.
 prog1 = [8, 
@@ -34,8 +35,12 @@ prog1 = [8,
     ['assign', fourteen_id, 14],
     ['assign', output_len_id, 1], 
     ['assign', output_ptr_id, 0],
-    # TODO: lines 5-8 from pseudocode
-    ['-', counter_id, counter_id, one_id],
+     # TODO: lines 5-8 from pseudocode
+    ['assign', result_id, 14], # line 5
+    ['read', counter_id, zero_id], # line 6
+    ['goto', counter_id, 11], # 7
+    ['*', result_id, result_id, result_id],# 8
+    ['-', counter_id, counter_id, one_id], #9
     ['goto', zero_id, 7],
     ['*', result_id, result_id, fourteen_id],
     ['write', output_ptr_id, result_id]
@@ -48,7 +53,7 @@ prog2 = [10,
     ['assign', fourteen_id, 14], 
     ['assign', output_len_id, 1], 
     ['assign', output_ptr_id, 0],
-    ['assign', result_id, 13],
+    ['assign', result_id, 14],
     ['assign', W_id, 2**32],
     ['read', counter_id, zero_id],
     ['goto', counter_id, 15],
@@ -58,8 +63,13 @@ prog2 = [10,
     ['-', result_id, result_id, temp_id],
     ['-', counter_id, counter_id, one_id],
     # TODO: lines 14-19 from pseudocode
+    ['goto', zero_id, 8], # 14
+    ['*', result_id, result_id, fourteen_id], #15
+    ['/', temp_id, result_id, W_id], #16
+    ['*', temp_id, temp_id, W_id], #17
+    ['-', result_id, result_id, temp_id], # 18
+    ['write', output_ptr_id, result_id] #19
 ]
-
 
 
 # Helper functions for plotting runtimes
