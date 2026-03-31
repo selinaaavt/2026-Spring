@@ -90,7 +90,11 @@ class HashTable:
                 return None
             return head.value
         else:
-            # TODO: Implement search for opt=False
+            current = head
+            while current is not None:
+                if current.key == key:
+                    return current.value
+                current = current.next
             return None
     
     '''
@@ -111,5 +115,18 @@ class HashTable:
             self.table[idx] = self.table[idx].next
             return True
         else:
-            # TODO: Implement delete for opt=False
+            prev = None
+            current = self.table[idx]
+            while current is not None:
+                if current.key == key:
+                    if prev is None:
+                        # Removing the head node
+                        self.table[idx] = current.next
+                    else:
+                        # Bypass the current node
+                        prev.next = current.next
+                    return True
+                prev = current
+                current = current.next
             return False
+
