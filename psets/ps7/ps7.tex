@@ -1,0 +1,111 @@
+\documentclass[11pt]{article}
+\usepackage{cs1200}
+
+\begin{document}
+
+% To include a problems set header, use the psHeader command
+\psHeader{7}{Tue April 7, 2026 (11:59pm)}
+
+Please see the syllabus for the full collaboration and generative AI policy, as well as information on grading, late days, and revisions.
+
+All sources of ideas, including (but not restricted to) any collaborators, AI tools, people outside of the course, websites, ARC tutors, and textbooks other than Hesterberg--Vadhan must be listed on your submitted homework along with a brief description of how they influenced your work. You need not cite core course resources, which are lectures, the Hesterberg--Vadhan textbook, sections, SREs, problem sets and solutions sets from earlier in the semester. If you use any concepts, terminology, or problem-solving approaches not covered in the course material by that point in the semester, you must describe the source of that idea. If you credit an AI tool for a particular idea, then you should also provide a primary source that corroborates it. Github Copilot and similar tools should be turned off when working on programming assignments.
+
+If you did not have any collaborators or external resources, please write 'none.' Please remember to select pages when you submit on Gradescope. A problem set on the border between two letter grades cannot be rounded up if pages are not selected OR collaborators not noted.
+
+\vspace{1em}
+
+\textbf{Your name: }
+
+\textbf{Collaborators and External Resources: }
+
+\textbf{No. of late days used on previous psets: }
+
+\textbf{No. of late days used after including this pset: }
+
+\vspace{1em}
+
+
+The purpose of this problem set is to practice modeling problems using graphs, reinforce understanding of the matching algorithm we learned, and think about ethical issues raised when modeling real-world problems for algorithmic solution.
+
+\begin{enumerate}
+ \item (Matching Algorithms)
+ Another practical application of matching algorithms is planning logistics, like in the following example from (fictional) ridesharing service Lyber in (real) New York City's Times Square.  When a customer books a Lyber ride, the ride request is sent to a Lyber server and combined with others to create a schematic like the one drawn in the map below (see next page).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.55\textwidth]{{Spring26/Problem Sets/ps7/ps7_diagram.png}}
+    \label{fig:travel_time_graph}
+\end{figure}
+
+Given a schematic like this, Lyber's goal is to serve as many customers (labeled A--E in the map) as possible, by assigning each one to a driver (labeled 1--6 in the map). For simplicity, each customer and driver is at an intersection, and assume driving between adjacent streets (vertical segment) takes 30 seconds, and driving between adjacent avenues (horizontal segments) takes 1 minute. However, the one twist is that they want to make sure that \textit{no customer is waiting for longer than 2 minutes}.  They also do not want to assign a driver to more than one customer at once, since serving a single customer can take more than 2 minutes.
+
+    \begin{enumerate}
+    \item To perform the assignment, they reduce to \MaximumMatching\ in bipartite graphs.  Draw a bipartite graph corresponding to the drivers and customers in the map below.
+
+    \item The Lyber app first prioritizes customers on Broadway, so they initially assign customer $A$ to driver 3 and customer $C$ to driver 5. Using the algorithm from class, find a \textit{maximum matching} in the bipartite matching graph you've drawn, starting from the initial matching of $A$ to 3 and $C$ to 5. Draw pictures showing the sequence of matchings and augmenting paths you find. (No need to break down the steps of the algorithm to find the augmenting paths.)
+    \end{enumerate}
+
+
+ \item (\MaximumVertexWeightedMatching)
+        For a graph $G=(V,E)$ and a subset $F\subseteq E$,
+        let $\cup F$ be the set of vertices that are an endpoint of at least one edge in $F$.  We use this notation because $\cup F$ is the union of all of the edges $\{u,v\}$ in $F$.        Equivalently, \[
+            \cup F := \{u \in V : \exists v \in V \text{ such that } \{u, v\} \in F\}
+        \]
+
+        \begin{enumerate}
+        \item Prove that if $G=(V,E)$ is a graph and $M\subseteq E$ is a matching in $G$, then there is a maximum-size matching $M'$ such that $\cup M \subseteq \cup M'$.  (Hint: consider constructing a maximum matching via augmenting paths, but starting with $M_0=M$ rather than $M_0=\emptyset$. What can you say about the $\cup {M_i}$'s?) \label{part:monotonicity}\\
+
+        \item   In the ethical and social considerations lecture/chapter, we saw how simply maximizing the {\em size} of a matching may not always be the right objective, and this motivated us to study the \MaximumVertexWeightedMatching\ problem, where we are given a vertex-weighted graph $G=(V,E,w)$ and our goal is to find a matching $M$ that maximizes $w(M) = \sum_{v \in \cup M} w(v)$.
+        We saw how both Utilitarian and Prioritarian objective functions can be expressed in this way.
+        Using Part~\ref{part:monotonicity}, prove that every graph $G$ has a matching $M^*$ that simultaneously maximizes both total weight and size.  That is, \textbf{for every matching $M$ in $G$, we have
+        both $w(M)\leq w(M^*)$ and $|M|\leq |M^*|$.\\}
+        \ \\
+        (In fact, the algorithm we have seen for \MaximumMatching\ can be modified to also give an efficient algorithm that simultaneously solves \MaximumVertexWeightedMatching, but we are not asking you to give an algorithm here.)
+
+        \bigskip
+        \item
+        \label{part:VertexWeightedMatching-pairs}
+        Recall that in the practice of kidney donation, patients and donors often come in pairs $(p_i,d_i)$, where donor $d_i$ is only willing to donate their kidney under the condition that $p_i$ receives a kidney.  Here you will see that this extra constraint can make it impossible to simultaneously maximize $w(M)$ and $|M|$.  Consider 4 donor-patient pairs $(d_0,p_0)$, $(d_1,p_1)$, $(d_2,p_2)$, $(d_3,p_3)$ with the following compatibility graph.
+
+\begin{tikzpicture}[
+  leftnode/.style={circle,draw,inner sep=2pt,minimum size=6mm},
+  rightnode/.style={circle,draw,inner sep=2pt,minimum size=6mm},
+  node distance=8mm and 20mm
+]
+  % left column (d_i)
+  \node[leftnode] (d0) {$d_0$};
+  \node[leftnode] (d1) [below=of d0] {$d_1$};
+  \node[leftnode] (d2) [below=of d1] {$d_2$};
+  \node[leftnode] (d3) [below=of d2] {$d_3$};
+
+  % right column (p_j)
+  \node[rightnode] (p0) [right=of d0] {$p_0$};
+  \node[rightnode] (p1) [below=of p0] {$p_1$};
+  \node[rightnode] (p2) [below=of p1] {$p_2$};
+  \node[rightnode] (p3) [below=of p2] {$p_3$};
+
+  % edges
+  \draw (d0) -- (p1); % {d0,p1}
+  \draw (d1) -- (p0); % {d1,p0}
+  \draw (d1) -- (p2); % {d1,p2}
+  \draw (d2) -- (p3); % {d2,p3}
+  \draw (d3) -- (p1); % {d3,p1}
+\end{tikzpicture}
+
+        Show how to assign weights to the patients $p_0,\ldots,p_3$ so that there is no matching that simultaneously maximizes $w(M)$ and $|M|$ over all matchings $M$ that \textbf{satisfy the paired donor-patient constraint}.
+
+ \bigskip
+ \item (EthiCS reflection) Suppose you are given a bipartite graph $G=(V,E)$ representing possible kidney donor--recipient matches, where the edges represent perfect compatibility matches, with far fewer donors than recipients, and for which there are multiple \MaximumMatching\ solutions. No living donors in the graph face any health risks from the procedure. Finally, you have access to the following data for all of the potential recipients: (1) expected life years gained from transplant, (2) expected QALYs gained from transplant, (3) age, (4) past QALYs lived to date, and (5) household income. You are tasked with developing a metric $\val$ that takes some (or all) of that data
+ and a potential matching $M\subseteq E$ and outputs a score $\val(M)\in \R$.
+ Then your engineers will design an algorithm that finds a matching maximizing $\val(M)$.
+
+ Describe some core characteristics your metric $\val$ ought to have and explain why you think those characteristics are ethically justified, drawing from at least one concept or discourse from the ethical \& social considerations lecture/chapter as well as your personal judgment. Your answer should take the form of a short paragraph (less than 200 words should suffice).
+
+\bigskip
+\item Once you're done with this problem set, please fill out \href{https://forms.gle/DXmsSamwujm3oSEw5}{this survey} so that we can gather students' thoughts on the problem set, and the class in general. It's not required, but we really appreciate all responses!
+
+\end{enumerate}
+
+\fi
+\end{enumerate}
+\end{document}
