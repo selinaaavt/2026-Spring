@@ -187,7 +187,7 @@ def hard_instance_benchmark():
     print()
     # Pickle loading code
     print("Reading a hard instance from Pickle file")
-    for filename in sorted(os.listdir('./hard_instances'), key=lambda x: int(x.split('_')[0])):
+    for filename in sorted(os.listdir('./hard_instances'), key=lambda x: float(x.split('_')[0])):
         with open(f'./hard_instances/{filename}', 'rb') as f:
             print("Loading file:", filename)
             g = pickle.load(f)

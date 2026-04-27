@@ -1,4 +1,5 @@
 from itertools import product, combinations
+from collections import deque
 
 '''
 Before you start: Read the README and the Graph implementation below.
@@ -157,25 +158,40 @@ def bron_kerbosch_max_indep_set(G, R, P, X):
 # If successful, modifies G.colors and returns the coloring.
 # If no coloring is possible, resets all of G's colors to None and returns None.
 def bfs_2_coloring(G, precolored_nodes=None):
-    # Assign every precolored node to have color 2
-    # Initialize visited set to contain precolored nodes if they exist
-    visited = set()
+    S = set()
     G.reset_colors()
     preset_color = 2
     if precolored_nodes is not None:
         for node in precolored_nodes:
             G.colors[node] = preset_color
-            visited.add(node)
-
+            S.add(node)
         if len(precolored_nodes) == G.N:
             return G.colors
-    
-    # TODO: Complete this function by implementing two-coloring using the colors 0 and 1.
-    # If there is no valid coloring, reset all the colors to None using G.reset_colors()
-    
-    G.reset_colors()
-    return None
 
+    for start in range(G.N):
+        if start in S:
+            continue
+        
+        G.colors[start] = 0
+        S.add(start)
+        F = deque([start])
+
+        while F:
+            temp = deque()
+            while F:
+                u = F.popleft()
+                for v in G.edges[u]:
+                    if v in S:
+                        if G.colors[v] == G.colors[u]:
+                            G.reset_colors()
+                            return None
+                    else:
+                        G.colors[v] = 1 - G.colors[u]
+                        S.add(v)
+                        temp.append(v)
+            F = temp
+
+    return G.colors
 
 
 '''

@@ -211,17 +211,42 @@ def iset_bfs_3_coloring(G):
 def sat_3_coloring(G):
     solver = Glucose3()
 
-    # TODO: Add the clauses to the solver
+    # Variable encoding: node u, color c -> SAT var (u * 3 + c + 1)
+    def var(u, c):
+        return u * 3 + c + 1
+
+    # Clause 1: Each node gets at least one color
+    for u in range(G.N):
+        solver.add_clause([var(u, c) for c in range(3)])
+
+    # Clause 2: Each node gets at most one color (no two colors simultaneously)
+    for u in range(G.N):
+        for c1, c2 in combinations(range(3), 2):
+            solver.add_clause([-var(u, c1), -var(u, c2)])
+
+    # Clause 3: Adjacent nodes must have different colors
+    for u in range(G.N):
+        for v in G.edges[u]:
+            if u < v:  # avoid duplicate clauses
+                for c in range(3):
+                    solver.add_clause([-var(u, c), -var(v, c)])
 
     # Attempt to solve, return None if no solution possible
     if not solver.solve():
         G.reset_colors()
         return None
 
-    # Accesses the model in form [-v1, v2, -v3 ...], which denotes v1 = False, v2 = True, v3 = False, etc.
     solution = solver.get_model()
 
-    # TODO: If a solution is found, convert it into a coloring and update G.colors
+    # Convert solution to coloring
+    # solution is a list like [-1, 2, -3, 4, ...]; positive = True, negative = False
+    true_vars = set(v for v in solution if v > 0)
+
+    for u in range(G.N):
+        for c in range(3):
+            if var(u, c) in true_vars:
+                G.colors[u] = c
+                break
 
     return G.colors
 
